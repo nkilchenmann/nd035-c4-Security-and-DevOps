@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class VerifyController {
     @GetMapping("/verify")
     public String verify() {
-        return "Hello from application";
+        return "ecommerce application";
     }
 }
