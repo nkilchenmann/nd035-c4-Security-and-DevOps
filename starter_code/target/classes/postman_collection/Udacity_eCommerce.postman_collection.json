@@ -6,13 +6,27 @@
 	},
 	"item": [
 		{
-			"name": "Create User",
+			"name": "Create user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"User id is contained\", () => {\r",
+							"const responseJson = pm.response.json();\r",
+							"pm.environment.set(\"testUserId\", responseJson.id);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\": \"Nik\"\r\n}",
+					"raw": "{\r\n    \"username\": \"{{testUserName}}\",\r\n    \"password\": \"{{testUserPassword}}\",\r\n    \"confirmPassword\": \"{{testUserPassword}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -20,16 +34,198 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/user/create",
-					"protocol": "http",
+					"raw": "{{host}}/api/user/create",
 					"host": [
-						"localhost"
+						"{{host}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"user",
 						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"JWT token in response header\", () => {\r",
+							"pm.environment.set(\"JWTToken\", pm.response.headers.get(\"Authorization\"));\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"{{testUserName}}\",\r\n    \"password\": \"{{testUserPassword}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/login",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user by Id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{JWTToken}}",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/api/user/id/{{testUserId}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"id",
+						"{{testUserId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user by name",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{JWTToken}}",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/api/user/{{testUserName}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"{{testUserName}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add item to cart",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{JWTToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"{{testUserName}}\",\r\n    \"itemId\": 1,\r\n    \"quantity\": 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/cart/addToCart",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"cart",
+						"addToCart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove item from cart",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{JWTToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"{{testUserName}}\",\r\n    \"itemId\": 1,\r\n    \"quantity\": 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/cart/removeFromCart",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"cart",
+						"removeFromCart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Submit order",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{JWTToken}}",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/api/order/submit/{{testUserName}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"order",
+						"submit",
+						"{{testUserName}}"
 					]
 				}
 			},

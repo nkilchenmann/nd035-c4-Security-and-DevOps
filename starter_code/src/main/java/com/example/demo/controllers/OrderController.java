@@ -38,14 +38,15 @@ public class OrderController {
         try {
             User user = userRepository.findByUsername(username);
             if (user == null) {
-                log.error("Order Request: User " + username + " not found");
+                log.error("requestType: OrderRequest, message: User " + username + " not found");
                 return ResponseEntity.notFound().build();
             }
             UserOrder order = UserOrder.createFromCart(user.getCart());
             orderRepository.save(order);
+            log.info("requestType: OrderRequest, message: User " + username + " has submitted an order, orderId: " + order.getId() + ", totalAmount: " + order.getTotal());
             return ResponseEntity.ok(order);
         } catch (Exception e) {
-            log.error("Order Request: Processing failure");
+            log.error("requestType: OrderRequest, message: Processing failure");
             return new ResponseEntity("Server failure during processing", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

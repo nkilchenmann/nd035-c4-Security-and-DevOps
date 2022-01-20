@@ -42,7 +42,7 @@ public class UserController {
     @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
         try {
-            log.info("Create User Request: Triggering user creation request for username: " + createUserRequest.getUsername());
+            log.info("requestType: CreateUserRequest, message: Triggering user creation request for username: " + createUserRequest.getUsername());
             User user = new User();
             user.setUsername(createUserRequest.getUsername());
             Cart cart = new Cart();
@@ -50,23 +50,22 @@ public class UserController {
             user.setCart(cart);
 
             if (createUserRequest.getPassword().length() < 7 || !createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
-                log.error("Create User Request: Password does not satisfy the minimum requirements");
+                log.error("requestType: CreateUserRequest, message: Password does not satisfy the minimum requirements");
                 return new ResponseEntity("Password does not fulfill the minimum requirements", HttpStatus.BAD_REQUEST);
             }
 
             user.setPassword((bCryptPasswordEncoder.encode(createUserRequest.getPassword())));
             if (userRepository.findByUsername(createUserRequest.getUsername()) != null) {
-                log.error("Create User Request: Username already exists");
+                log.error("requestType: CreateUserRequest, message: Username already exists");
                 return new ResponseEntity("Username already exists", HttpStatus.BAD_REQUEST);
 
             } else {
                 userRepository.save(user);
-                log.info("Create User Request: User " + createUserRequest.getUsername() + "created successfully");
-                System.out.println("test");
+                log.info("requestType: CreateUserRequest, message: User " + createUserRequest.getUsername() + " created successfully");
                 return ResponseEntity.ok(user);
             }
         } catch (Exception e) {
-            log.error("Create User Request: Processing failure");
+            log.error("requestType: CreateUserRequest, message: Processing failure");
             return new ResponseEntity("Server failure", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
